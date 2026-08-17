@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>修仙：大道長生錄</title>
+    <title>修仙：大道長生錄 - 小說沉浸版</title>
     <style>
         body {
             background-color: #0d1117;
             color: #c9d1d9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             padding: 20px;
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
-            line-height: 1.6;
+            line-height: 1.7;
         }
         .panel {
             background-color: #161b22;
@@ -26,7 +26,7 @@
             background-color: #238636;
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 20px;
             font-size: 15px;
             border-radius: 6px;
             cursor: pointer;
@@ -36,69 +36,71 @@
         .btn:hover { background-color: #2ea043; }
         .btn-cheat { background-color: #8957e5; }
         .btn-danger { background-color: #da3633; }
-        .event-text {
-            font-size: 15px;
-            white-space: pre-line;
-            background: #0d1117;
+        .event-log {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #090d13;
             padding: 15px;
             border-radius: 6px;
-            border-left: 4px solid #58a6ff;
+            border: 1px solid #30363d;
         }
+        .log-item {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #21262d;
+        }
+        .tag { color: #f2e05a; font-weight: bold; }
+        .highlight { color: #58a6ff; }
     </style>
 </head>
 <body>
 
-    <h1>🌌 《修仙：大道長生錄》V2.0</h1>
-    <p>資質碾壓 · 演化事件 · 境界細化版</p>
+    <h1>📖 《修仙：大道長生錄》V3.0</h1>
+    <p>修仙小說沉浸版 · 歷史履歷 · 萬字劇本庫</p>
 
     <div id="start-screen" class="panel">
-        <h3>天道重構完畢！請選擇開局：</h3>
-        <button class="btn" onclick="startRandomGame()">【天道】隨機投胎輪迴</button>
-        <button class="btn btn-cheat" onclick="startCheatGame()">【作弊】荒古帝族神體開局</button>
+        <h3>天道法網重新編織！請選擇你的開局：</h3>
+        <button class="btn" onclick="startRandomGame()">🎲 【天道輪迴】隨機出身投胎</button>
+        <button class="btn btn-cheat" onclick="startCheatGame()">👑 【帝族降世】無敵天驕小說主角</button>
     </div>
 
     <div id="game-screen" class="panel" style="display:none;">
-        <h2>📥 角色資質與狀態</h2>
+        <h2>📥 主角面板與因果</h2>
         <div id="status-panel"></div>
         <hr style="border-color: #30363d; margin: 20px 0;">
-        <h2>📜 大道演化歷程</h2>
-        <div id="event-panel" class="event-text"></div>
+        <h2>📜 修仙小說歷程（滾動履歷）</h2>
+        <div id="event-log" class="event-log"></div>
         <div id="options-panel" style="margin-top: 20px;"></div>
     </div>
 
     <script>
         let p = {
-            age: 0,
-            realmIdx: 0,
-            progress: 0,
-            lifespan: 80,
-            lingShi: 0,
-            bgType: "",
-            lingGen: "",
-            bodyType: "凡軀",
-            gongFa: "無",
-            rateMult: 1, // 資質倍率
-            yan: 50, zhi: 50, xin: 50, yun: 50
+            age: 0, realmIdx: 0, progress: 0, lifespan: 80, lingShi: 0,
+            bgName: "", father: "", mother: "", lingGen: "", bodyType: "凡軀",
+            rateMult: 1, yun: 50, xin: 50, zhi: 50
         };
 
         const realms = [
-            "凡人", 
-            "練氣期一層", "練氣期二層", "練氣期三層", "練氣期四層", "練氣期五層", 
-            "練氣期六層", "練氣期七層", "練氣期八層", "練氣期九層", "練氣期十層圓滿", 
-            "築基初期", "築基中期", "築基後期", "築基圓滿",
-            "金丹初期", "金丹中期", "金丹後期", "金丹圓滿", "元嬰老祖"
+            "凡人", "練氣期一層", "練氣期二層", "練氣期三層", "練氣期四層", "練氣期五層",
+            "練氣期六層", "練氣期七層", "練氣期八層", "練氣期九層", "練氣期十層大圓滿",
+            "築基初期", "築基中期", "築基後期", "築基圓滿", "金丹大能"
         ];
 
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
+        function appendLog(text) {
+            let logDiv = document.getElementById('event-log');
+            logDiv.innerHTML = `<div class="log-item">${text}</div>` + logDiv.innerHTML;
+        }
+
         function updateStatus() {
             document.getElementById('status-panel').innerHTML = `
-<b>【年齡】</b> ${p.age} 歲 | <b>【境界】</b> <span style="color:#58a6ff">${realms[p.realmIdx]}</span> (${p.progress}%) | <b>【壽元】</b> ${p.age} / ${p.lifespan} 年
-<b>【修煉倍率】</b> <span style="color:#f2e05a">${p.rateMult}x</span> (由靈根體質決定) | <b>【靈石】</b> ${p.lingShi}
-<b>【出身資質】</b> ${p.bgType} | 靈根：${p.lingGen} | 體質：${p.bodyType}
-<b>【屬性面板】</b> 氣運：${p.yun} ｜ 心智：${p.xin} ｜ 智力：${p.zhi}
+<b>【姓名】</b> 葉長生（主角） | <b>【年齡】</b> ${p.age} 歲 | <b>【境界】</b> <span class="highlight">${realms[p.realmIdx]}</span> (${p.progress}%)
+<b>【壽元】</b> ${p.age} / ${p.lifespan} 年 | <b>【靈石】</b> ${p.lingShi} 塊 | <b>【修練天資】</b> <span class="tag">${p.rateMult} 倍速</span>
+<b>【背景】</b> ${p.bgName} | <b>【資質】</b> ${p.lingGen} (${p.bodyType})
+<b>【血脈因果】</b> 父：${p.father} ｜ 母：${p.mother}
             `;
         }
 
@@ -107,155 +109,111 @@
             document.getElementById('game-screen').style.display = 'block';
 
             let rand = getRandomInt(1, 100);
-            if (rand <= 30) {
-                p.bgType = "三流貧瘠山村";
-                p.lingGen = "雜亂五靈根";
-                p.rateMult = 1; // 廢柴倍率
-                p.lifespan = 75;
-            } else if (rand <= 75) {
-                p.bgType = "修仙家族附屬";
-                p.lingGen = "三靈根";
-                p.rateMult = 3; // 普通倍率
-                p.lifespan = 85;
-                p.lingShi = 50;
+            if (rand <= 40) {
+                p.bgName = "邊陲小鎮農家"; p.father = "老實獵戶（凡人）"; p.mother = "採藥婦（凡人）";
+                p.lingGen = "雜亂五靈根"; p.rateMult = 1; p.lifespan = 75; p.lingShi = 0;
+            } else if (rand <= 80) {
+                p.bgName = "修仙家族支脈"; p.father = "家族執事（練氣五層）"; p.mother = "丹房弟子（練氣三層）";
+                p.lingGen = "地品三靈根"; p.rateMult = 3; p.lifespan = 90; p.lingShi = 100;
             } else if (rand <= 95) {
-                p.bgType = "一流洞天福地";
-                p.lingGen = "地品雙靈根";
-                p.rateMult = 8; // 天才倍率
-                p.lifespan = 110;
-                p.lingShi = 500;
+                p.bgName = "名門正派宗門"; p.father = "內門長老（築基圓滿）"; p.mother = "宗門聖女後裔（築基期）";
+                p.lingGen = "天品雙靈根"; p.rateMult = 8; p.lifespan = 120; p.lingShi = 600;
             } else {
-                p.bgType = "荒古隱世帝族";
-                p.lingGen = "極品天靈根";
-                p.bodyType = "荒古聖體";
-                p.rateMult = 20; // 絕世奇才倍率
-                p.lifespan = 180;
-                p.lingShi = 2000;
+                p.bgName = "荒古不朽帝族"; p.father = "帝族神將（大聖境）"; p.mother = "隱世神女（聖境）";
+                p.lingGen = "極品天靈根"; p.bodyType = "荒古聖體"; p.rateMult = 25; p.lifespan = 200; p.lingShi = 3000;
             }
 
-            p.yun = getRandomInt(40, 100);
-            p.xin = getRandomInt(40, 100);
-            p.zhi = getRandomInt(40, 100);
-
             updateStatus();
-            document.getElementById('event-panel').innerHTML = `
-🌌 <b>【天道輪迴 · 降生】</b><br>
-你出生於【${p.bgType}】，族內測出你擁有<b>【${p.lingGen}】</b>，體質為<b>【${p.bodyType}】</b>！<br>
-受資質影響，你的修練速度倍率為 <b>${p.rateMult} 倍</b>！天資決定了仙途的下限……<br>
-平安度過 0-12 歲幼年期，準備踏入修煉。
-            `;
+            appendLog(`🌌 <b>【降生異象】</b> 你降生於【${p.bgName}】！降生之日天地靈氣微微震盪。你的父親是 <span class="highlight">${p.father}</span>，母親是 <span class="highlight">${p.mother}</span>。經家族老祖親自為你測驗，確定你擁有<b>【${p.lingGen}】</b>，體質為<b>【${p.bodyType}】</b>。你平安度過了 0-12 歲的幼年時光。`);
 
             document.getElementById('options-panel').innerHTML = `
-                <button class="btn" onclick="startCultivate()">【12歲】領取族內功法，正式開脈修練</button>
+                <button class="btn" onclick="startCultivate()">【12歲】踏入家族祠堂，開脈引氣入體</button>
             `;
         }
 
         function startCheatGame() {
-            p.bgType = "至高不朽帝族";
-            p.lingGen = "萬劫混沌聖靈根";
-            p.bodyType = "鴻蒙道體";
-            p.rateMult = 50; // 無敵倍率
-            p.lifespan = 300;
-            p.lingShi = 10000;
-            p.yun = 150; p.xin = 150; p.zhi = 150;
+            p.bgName = "至高荒古帝族"; p.father = "當世大帝（無敵姿）"; p.mother = "鴻蒙宮宮主（半仙）";
+            p.lingGen = "萬劫混沌聖靈根"; p.bodyType = "鴻蒙道體"; p.rateMult = 60; p.lifespan = 350; p.lingShi = 10000;
 
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
             updateStatus();
 
-            document.getElementById('event-panel').innerHTML = `
-✨ <b>【帝星降世】</b><br>
-異象覆蓋三千州！你擁有<b>【${p.lingGen}】</b>與<b>【${p.bodyType}】</b>，修練倍率高達 <b>50倍</b>！
-            `;
+            appendLog(`✨ <b>【主角降世】</b> 帝星顆顆隕落，紫氣東來九萬里！你降生於【${p.bgName}】，乃大帝親傳血脈！擁有古今罕見的<b>【${p.lingGen}】</b>與<b>【${p.bodyType}】</b>！修練速度高達 <b>60 倍</b>！`);
 
             document.getElementById('options-panel').innerHTML = `
-                <button class="btn" onclick="startCultivate()">【12歲】直接傳承無上帝經</button>
+                <button class="btn" onclick="startCultivate()">【12歲】直接傳承無上帝經，開啟修仙路</button>
             `;
         }
 
         function startCultivate() {
-            p.age = 12;
-            p.realmIdx = 1; // 練氣一層
-            p.progress = 0;
+            p.age = 12; p.realmIdx = 1; p.progress = 0;
             updateStatus();
-
-            document.getElementById('event-panel').innerHTML = `
-📜 <b>【12歲 · 踏入仙途】</b><br>
-你正式引氣入體，突破至 <b>【${realms[p.realmIdx]}】</b>！
-            `;
-
+            appendLog(`📜 <b>【12歲 · 正式仙途】</b> 你坐於靜室之中，運轉引氣決，天地靈氣如狂潮般湧入經脈，一舉衝破關卡，正式踏入 <b>【${realms[p.realmIdx]}】</b>！`);
             showActions();
         }
 
         function showActions() {
             document.getElementById('options-panel').innerHTML = `
-                <button class="btn" onclick="doAction('xiulian')">🧘‍♂️ 閉關吐納 (+修為)</button>
-                <button class="btn" onclick="doAction('lilian')">🌲 秘境歷練 (隨機事件/機緣)</button>
-                <button class="btn" onclick="doAction('tupo')">⚡ 嘗試突破小境界</button>
+                <button class="btn" onclick="doAction('xiulian')">🧘‍♂️ 洞府閉關 (讀取苦修劇情)</button>
+                <button class="btn" onclick="doAction('lilian')">🌲 下山歷練 (觸發小說隨機事件)</button>
+                <button class="btn" onclick="doAction('tupo')">⚡ 衝擊小境界 (嘗試渡劫突破)</button>
             `;
         }
 
         function doAction(type) {
             p.age += 1;
-            let log = `<b>【${p.age}歲】</b> `;
+            let ageStr = `<span class="tag">【${p.age}歲】</span> `;
 
             if (type === 'xiulian') {
-                let baseAdd = getRandomInt(5, 10);
-                let totalAdd = baseAdd * p.rateMult; // 資質倍率計算
-                p.progress += totalAdd;
+                let add = getRandomInt(8, 15) * p.rateMult;
+                p.progress += add;
 
-                // 隨機閉關事件演化
-                let eventRand = getRandomInt(1, 100);
-                if (eventRand <= 15) {
-                    p.progress = Math.max(0, p.progress - 20);
-                    log += `閉關時心魔作祟，急於求成導致<b>【走火入魔】</b>！修為倒退 20%，損耗些許壽元。`;
-                } else if (eventRand >= 85) {
-                    p.progress += 30;
-                    log += `苦修時福至靈銜，突然進入<b>【頓悟狀態】</b>！額外暴增 30% 修為！`;
-                } else {
-                    log += `你汲取天地靈氣閉關一年。受資質影響，修為進度增加 <b>+${totalAdd}%</b>！`;
-                }
+                let xiulianPlots = [
+                    `${ageStr}你盤膝坐於靈脈之上，靜心運轉功法。隨著一口濁氣吐出，周身靈氣翻湧，修為進度大幅增長 <b>+${add}%</b>！`,
+                    `${ageStr}閉關期間，你對天地大道偶有所悟，隱約觸碰到了一絲玄之又玄的境界，修為順利提升 <b>+${add}%</b>！`,
+                    `${ageStr}你苦修一年，不斷壓縮體內的真氣，經脈被拓展得更加寬廣，修為穩健提升 <b>+${add}%</b>！`,
+                    `${ageStr}你在族內藏經閣借閱前人筆記，參悟透了一門吐納法門，修練事半功倍，修為暴增 <b>+${add}%</b>！`
+                ];
+                appendLog(xiulianPlots[getRandomInt(0, xiulianPlots.length - 1)]);
 
             } else if (type === 'lilian') {
-                let eventRand = getRandomInt(1, 100) + (p.yun / 10);
+                let rand = getRandomInt(1, 100);
 
-                if (eventRand < 40) {
-                    let loss = getRandomInt(10, 30);
+                if (rand <= 30) {
+                    let loss = getRandomInt(20, 80);
                     p.lingShi = Math.max(0, p.lingShi - loss);
-                    log += `外出歷練時遭遇邪修劫道！你拼死逃脫，不慎遺失了 <b>${loss} 塊靈石</b>。`;
-                } else if (eventRand < 80) {
-                    let gain = getRandomInt(30, 150);
+                    appendLog(`${ageStr}你前往黑市坊市淘寶，不幸遇到了經驗豐富的奸商，被忽悠買下一塊廢鐵，損耗了 <b>${loss} 塊靈石</b>！`);
+                } else if (rand <= 70) {
+                    let gain = getRandomInt(50, 200);
                     p.lingShi += gain;
-                    log += `在山谷深處採集到百年朱果並售出，獲得了 <b>${gain} 塊靈石</b>！`;
+                    appendLog(`${ageStr}你深入萬獸山脈外圍，成功擊殺一隻二階妖獸，採集到珍貴的妖丹與材料，入賬 <b>${gain} 塊靈石</b>！`);
+                } else if (rand <= 90) {
+                    p.progress += 40;
+                    appendLog(`${ageStr}你在山谷採藥時，意外撞見兩位高手同歸於盡！你小心翼翼前去拾荒，撿到儲物袋與高階丹藥，修為暴漲 <b>+40%</b>！`);
                 } else {
-                    p.progress += 50;
-                    p.lingShi += 200;
-                    log += `💥 <b>【大機緣！】</b> 你掉入前人洞府，獲得古仙遺澤！修為大增 50%，並獲得 200 靈石！`;
+                    p.progress += 80; p.lingShi += 500;
+                    appendLog(`${ageStr}💥 <b>【小說主角大機緣！】</b> 你被強敵追殺逼入絕路跌落崖底，竟意外掉入古仙人洞府！獲得無上洗髓丹與靈石堆！修為狂飆 <b>+80%</b>，靈石 <b>+500</b>！`);
                 }
 
             } else if (type === 'tupo') {
                 if (p.progress >= 100) {
-                    p.realmIdx += 1;
-                    p.progress = 0;
-                    p.lifespan += (p.realmIdx > 10) ? 50 : 5; // 築基以上加大幅壽元
-                    log += `🎉 氣血充盈，小境界突破成功！登臨 <b>【${realms[p.realmIdx]}】</b>！壽元增加！`;
+                    p.realmIdx += 1; p.progress = 0; p.lifespan += 8;
+                    appendLog(`${ageStr}🎉 <b>【突破成功！】</b> 你引導全身真氣衝擊瓶頸，體內傳出啪嗒一聲巨響！成功突破登臨 <b>【${realms[p.realmIdx]}】</b>！壽元增加 8 年！`);
                 } else {
-                    let backfire = getRandomInt(10, 30);
-                    p.progress = Math.max(0, p.progress - backfire);
-                    log += `❌ 修為不足（目前 ${p.progress}% / 需要 100%），強行衝關失敗！受到經脈反噬，修為損失 ${backfire}%！`;
+                    p.progress = Math.max(0, p.progress - 20);
+                    appendLog(`${ageStr}❌ <b>【突破失敗！】</b> 你的修為尚未達到大圓滿（目前 ${p.progress}%），強行衝關導致真氣逆流，遭到經脈反噬，修為跌落 20%！`);
                 }
             }
 
-            // 死亡檢測
             if (p.age >= p.lifespan) {
-                document.getElementById('event-panel').innerHTML = `☠️ <b>【壽元耗盡 · 坐化】</b><br>你活了 ${p.age} 歲，停留在【${realms[p.realmIdx]}】，未能打破天地桎梏，最終化為一具枯骨……`;
+                appendLog(`☠️ <b>【仙途終結 · 坐化】</b> 歲月無情，你活到了 ${p.age} 歲，停留在【${realms[p.realmIdx]}】。耗盡了最後一絲壽元，最終坐化於洞府之中，化為天下一縷塵埃……`);
                 document.getElementById('options-panel').innerHTML = `<button class="btn btn-danger" onclick="location.reload()">🔄 重新投胎輪迴</button>`;
                 updateStatus();
                 return;
             }
 
             updateStatus();
-            document.getElementById('event-panel').innerHTML = log;
             showActions();
         }
     </script>
