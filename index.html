@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>修仙：大道長生錄 - 互動小說版</title>
+    <title>修仙：大道長生錄 - 唯一真界天道版</title>
     <style>
         body {
             background-color: #0d1117;
             color: #c9d1d9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             padding: 20px;
-            max-width: 850px;
+            max-width: 900px;
             margin: 0 auto;
             line-height: 1.8;
         }
@@ -21,25 +21,27 @@
             padding: 24px;
             margin-bottom: 20px;
         }
-        h1, h2, h3 { color: #58a6ff; }
+        h1, h2, h3 { color: #58a6ff; margin-top: 0; }
         .btn {
             background-color: #238636;
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 12px 18px;
             font-size: 15px;
             border-radius: 6px;
             cursor: pointer;
-            margin-right: 10px;
             margin-top: 10px;
             display: block;
             width: 100%;
             text-align: left;
+            transition: 0.2s;
         }
         .btn:hover { background-color: #2ea043; }
-        .btn-story { background-color: #1f6feb; }
-        .btn-story:hover { background-color: #388bfd; }
+        .btn-special { background-color: #1f6feb; }
+        .btn-special:hover { background-color: #388bfd; }
+        .btn-cheat { background-color: #8957e5; }
         .btn-danger { background-color: #da3633; }
+        
         .chapter-box {
             background: #090d13;
             padding: 20px;
@@ -58,49 +60,56 @@
         .chapter-content {
             font-size: 15px;
             white-space: pre-line;
-            color: #d2a8ff;
+            color: #c9d1d9;
         }
-        .status-bar {
-            position: sticky;
-            top: 10px;
-            z-index: 100;
+        .status-panel {
             background: #161b22;
-            padding: 12px;
-            border-radius: 6px;
+            padding: 16px;
+            border-radius: 8px;
             border-left: 4px solid #58a6ff;
             font-size: 14px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            line-height: 1.8;
         }
+        .tag { color: #f2e05a; font-weight: bold; }
+        .highlight { color: #58a6ff; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>📖 《修仙：大道長生錄》V7.1</h1>
-    <p>每回合劇情鋪墊 · 自動滾動 · 分歧抉擇</p>
+    <h1>🌌 《修仙：大道長生錄》</h1>
+    <p>唯一真界 · 群雄並起 · 天道二十重法網終極演化版</p>
 
     <div id="start-screen" class="panel">
-        <h3>🌌 選擇你的開局命格：</h3>
-        <button class="btn btn-story" onclick="initGame('normal')">🎲 【天道輪迴】隨機出身開啟互動仙途</button>
-        <button class="btn btn-story" onclick="initGame('god')">👑 【帝族降世】帝子專屬無敵劇情</button>
+        <h3>天道二十重法網與戰力鎖已全部鋪設完畢！請選擇開局：</h3>
+        <button class="btn btn-special" onclick="initGame('ok')">🎲 【ok】開啟最嚴謹、最硬核的天道隨機投胎</button>
+        <button class="btn btn-cheat" onclick="initGame('cheat')">👑 【作弊】帝族嫡系帝子 + 極品天靈根 + 荒古聖體開局</button>
     </div>
 
     <div id="game-screen" class="panel" style="display:none;">
-        <div id="status-bar" class="status-bar"></div>
+        <h3>📥 角色數據面板</h3>
+        <div id="status-panel" class="status-panel"></div>
+        <hr style="border-color: #30363d; margin: 20px 0;">
+        <h2>📜 大道演化歷程（滾動履歷）</h2>
         <div id="chapter-container"></div>
         <div id="options-panel" class="panel" style="background:#0d1117;"></div>
     </div>
 
     <script>
         let p = {
-            name: "葉長生", age: 12, realmIdx: 1, progress: 0, lifespan: 90, lingShi: 100,
-            lingGen: "地品天靈根", bodyType: "凡軀", chapterNum: 1, currentScenario: null
+            name: "葉長生", age: 0, realmIdx: 0, progress: 0, lifespan: 85, lingShi: 0,
+            bgType: "", bgDetail: "", father: "", mother: "",
+            lingGen: "", bodyType: "凡軀",
+            yan: 0, zhi: 0, xin: 0, yun: 0,
+            rankTianjiao: "未上榜", rankShili: "未上榜", rankJuese: "未上榜",
+            gongFa: "無", fuZhi: "尚未解鎖",
+            items: [], chapterNum: 1
         };
 
         const realms = [
-            "凡人", "練氣一層", "練氣二層", "練氣三層", "練氣四層", "練氣五層",
-            "練氣六層", "練氣七層", "練氣八層", "練氣九層", "練氣大圓滿",
-            "築基初期", "築基中期", "築基後期", "築基大圓滿", "金丹大能"
+            "凡人", "練氣期一層", "練氣期二層", "練氣期三層", "練氣期四層", "練氣期五層",
+            "練氣期六層", "練氣期七層", "練氣期八層", "練氣期九層", "練氣期大圓滿",
+            "築基初期", "築基中期", "築基後期", "築基大圓滿", "結丹期", "元嬰期", "化神期"
         ];
 
         function getRandomInt(min, max) {
@@ -109,43 +118,21 @@
 
         function scrollToBottom() {
             setTimeout(() => {
-                window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }, 100);
         }
 
-        function updateStatusBar() {
-            document.getElementById('status-bar').innerHTML = `
-<b>【主角】</b> ${p.name} ｜ <b>【年齡】</b> ${p.age} 歲 ｜ <b>【境界】</b> ${realms[p.realmIdx]} (${p.progress}%) ｜ <b>【壽元】</b> ${p.age}/${p.lifespan} 年 ｜ <b>【靈石】</b> ${p.lingShi} 塊
+        function updateStatusPanel() {
+            document.getElementById('status-panel').innerHTML = `
+<b>【年齡】</b> ${p.age} 歲 | <b>【境界】</b> <span class="highlight">${realms[p.realmIdx]}</span> (${p.progress}%) | <b>【肉身強度】</b> ${p.bodyType !== "凡軀" ? p.bodyType : "孱弱"} | <b>【壽元】</b> ${p.age} / ${p.lifespan} 年 | <b>【靈石】</b> ${p.lingShi} 塊<br>
+<b>【所在地/狀態】</b> ${p.bgType}（健康）<br>
+<b>【血脈因果】</b> 父族：${p.father} ｜ 母族：${p.mother}<br>
+<b>【資質體質】</b> 靈根：<span class="tag">${p.lingGen}</span> ｜ 體質：<span class="tag">${p.bodyType}</span><br>
+<b>【天道榜單】</b> 天驕榜：<span class="highlight">${p.rankTianjiao}</span> ｜ 實力榜：${p.rankShili} ｜ 絕色榜：${p.rankJuese}<br>
+<b>【基礎屬性】</b> 顏值：${p.yan} ｜ 智力：${p.zhi} ｜ 心智：${p.xin} ｜ 氣運：${p.yun}<br>
+<b>【功法/副職】</b> ${p.gongFa}（熟練度：0%） ｜ 副職業：${p.fuZhi}<br>
+<b>【儲物袋物資】</b> ${p.items.length > 0 ? p.items.join("、") : "無"}
             `;
-        }
-
-        function checkBreakthrough() {
-            if (p.progress >= 100 && p.realmIdx < realms.length - 1) {
-                p.realmIdx += 1;
-                p.progress -= 100;
-                p.lifespan += 10;
-                return `\n\n⚡ 【水到渠成】體內澎湃真氣衝破桎梏！你順利突破至 **【${realms[p.realmIdx]}】**！壽元大增！`;
-            }
-            return "";
-        }
-
-        function initGame(mode) {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
-
-            if (mode === 'god') {
-                p.lingGen = "萬劫混沌天靈根"; p.bodyType = "鴻蒙聖體"; p.lifespan = 200; p.lingShi = 2000;
-            }
-
-            updateStatusBar();
-
-            let chapterText = `【第一章：十二歲 · 開脈大典】\n\n你叫${p.name}，年滿十二歲。在家族開脈大典上，測靈石亮起沖天光芒！族長當場宣佈將你列為核心弟子，並賜予功法與獨立靜室。你正式踏入【${realms[p.realmIdx]}】！`;
-            
-            appendChapter("序章 · 仙途開啟", chapterText);
-            presentChoices13();
         }
 
         function appendChapter(title, text) {
@@ -160,126 +147,134 @@
             scrollToBottom();
         }
 
-        function presentChoices13() {
-            p.age = 13;
-            document.getElementById('options-panel').innerHTML = `
-                <h3>👉 【十三歲抉擇】後山探索時天降暴雨，你發現了一處隱秘溶洞：</h3>
-                <button class="btn" onclick="makeChoice('13_a')">1. 恭敬入內拜祭骸骨，仔細搜索溶洞四周</button>
-                <button class="btn" onclick="makeChoice('13_b')">2. 提防有詐，只在洞口避雨，雨停獨立離開</button>
-            `;
+        function initGame(mode) {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+
+            if (mode === 'cheat') {
+                p.bgType = "【東荒】荒古不朽帝族 · 葉氏帝族祖地";
+                p.father = "葉氏帝族第三脈脈主（大聖境後期，掌管帝族三千戰將）";
+                p.mother = "隱世荒古世家姬氏嫡女（大聖境初期，身懷純陽帝血）";
+                p.lingGen = "極品天靈根"; p.bodyType = "荒古聖體";
+                p.lifespan = 185; p.lingShi = 2000;
+                p.yan = 128; p.zhi = 135; p.xin = 132; p.yun = 142;
+                p.rankTianjiao = "第 7 名（天道注視中）";
+                p.items = ["護身帝符x1", "極品培元丹x10", "天元靈石x2000"];
+            } else {
+                let r = getRandomInt(1, 100);
+                if (r <= 5) {
+                    p.bgType = "【弱三流背景】農戶/獵戶之家";
+                    p.father = "凡人獵戶（無修為）"; p.mother = "採藥婦（無修為）";
+                    p.lingGen = ["偽靈根", "五靈根"][getRandomInt(0, 1)];
+                    p.lifespan = 75; p.lingShi = 0;
+                } else if (r <= 50) {
+                    p.bgType = "【二流修仙世家】";
+                    p.father = "家族執事（築基初期）"; p.mother = "商會之女（練氣七層）";
+                    p.lingGen = ["四靈根", "三靈根"][getRandomInt(0, 1)];
+                    p.lifespan = 90; p.lingShi = 100;
+                } else if (r <= 95) {
+                    p.bgType = "【一流古老聖地】";
+                    p.father = "峰主親傳（元嬰後期）"; p.mother = "長老之女（元嬰初期）";
+                    p.lingGen = ["雙靈根", "單靈根"][getRandomInt(0, 1)];
+                    p.lifespan = 120; p.lingShi = 800;
+                } else {
+                    p.bgType = "【至高不朽道統】荒古帝族";
+                    p.father = "帝族帝子（大聖境）"; p.mother = "荒古神女（大聖境）";
+                    p.lingGen = "極品天靈根"; p.bodyType = "荒古聖體";
+                    p.lifespan = 185; p.lingShi = 2000;
+                    p.rankTianjiao = "第 7 名";
+                }
+                p.yan = getRandomInt(50, 130); p.zhi = getRandomInt(50, 135);
+                p.xin = getRandomInt(50, 135); p.yun = getRandomInt(50, 140);
+            }
+
+            updateStatusPanel();
+
+            let introText = `🌌 【降生異象】
+你降生於唯一真界【東荒】的 ${p.bgType}！
+降生之日，天地靈氣異動，天道法網正式錨定你的宿命。
+父族：${p.father}
+母族：${p.mother}
+
+在家族/勢力的庇護下，你平安度過了 0-12 歲幼年期……
+今日，是你年滿十二歲，正式開啟開脈引氣、進入祖祠挑選【本命功法】與【修仙百藝】的大日子！`;
+
+            appendChapter("0-12歲 · 幼年降生與天道錨定", introText);
+            presentChoices12();
+        }
+
+        function presentChoices12() {
+            p.age = 12;
+            let optionsHtml = `<h3>👉 【12 歲 · 核心命運抉擇】請做出你的抉擇：</h3>`;
+
+            optionsHtml += `<button class="btn" onclick="makeChoice(1)">【選項 1】: 【帝道殺伐】 繼承至高帝經《太上鎮天經》，追求同階無敵戰力。</button>`;
+            optionsHtml += `<button class="btn" onclick="makeChoice(2)">【選項 2】: 【聖體本源】 專攻肉身與聖體覺醒的《荒古聖體訣》，將肉身推至極致。</button>`;
+            optionsHtml += `<button class="btn" onclick="makeChoice(3)">【選項 3】: 【百家之長】 同時參悟兩大帝級殘篇，嘗試自創專屬法門（風險極高）。</button>`;
+            optionsHtml += `<button class="btn" onclick="makeChoice(4)">【選項 4】: 【百藝同修】 開啟副職業選擇，專注於煉丹或符陣，儲備底牌。</button>`;
+            optionsHtml += `<button class="btn" onclick="makeChoice(5)">【選項 5】: 【隱忍斂翼】 主動申請封印異象與名次，化名下山暗中觀察大勢。</button>`;
+
+            if (p.zhi >= 130) {
+                optionsHtml += `<button class="btn btn-special" onclick="makeChoice(6)">【選項 6（智力特權·智謀布局）】: 【借勢分權】 挑起派系平衡，將族內 30% 修練資源劃歸自己掌控。</button>`;
+            }
+            if (p.xin >= 130) {
+                optionsHtml += `<button class="btn btn-special" onclick="makeChoice(7)">【選項 7（心智特權·驅虎吞狼）】: 【帝路清除】 利用冷酷手段，在選功法時引導競爭對手挑選相衝功法，廢其半成道基。</button>`;
+            }
+
+            document.getElementById('options-panel').innerHTML = optionsHtml;
             scrollToBottom();
         }
 
-        function presentChoices14() {
-            p.age = 14;
-            document.getElementById('options-panel').innerHTML = `
-                <h3>👉 【十四歲抉擇】在仙城坊市中，你看到一個地攤上一塊滿是泥垢的黑鐵片：</h3>
-                <button class="btn" onclick="makeChoice('14_a')">1. 花費 30 靈石買下，嘗試用真火燒灼</button>
-                <button class="btn" onclick="makeChoice('14_b')">2. 覺得是騙子地攤，轉身前往高階丹藥鋪</button>
-            `;
-            scrollToBottom();
+        function makeChoice(num) {
+            p.chapterNum += 1;
+            p.realmIdx = 1; // 踏入練氣期一層
+            p.progress = 20;
+
+            let choiceTexts = {
+                1: "你選擇了《太上鎮天經》！磅礴的帝道殺伐氣息灌入體內，你順利引氣入體，踏入【練氣期一層】！",
+                2: "你選擇了《荒古聖體訣》！氣血如陽般燃燒，肉身被大幅淬煉，順利踏入【練氣期一層】！",
+                3: "你冒險融合兩大帝經殘篇！過程中險些走火入魔，但憑藉極高天資強行壓下，成功踏入【練氣期一層】並悟出奇異氣流！",
+                4: "你選擇百藝同修！解鎖了【煉丹師】副職，獲得基礎丹方與靈草，同時踏入【練氣期一層】！",
+                5: "你請求封印了天驕榜異象，化名下山。在暗中觀察東荒大勢的同時，順利踏入【練氣期一層】！",
+                6: "你運用神算智謀，成功掌控了族內 30% 的資源分配！獲得額外 1000 塊靈石，並踏入【練氣期一層】！",
+                7: "你施展冷酷心智，暗中引導堂兄選錯功法使其道基受損！少了一個強勁對手，同時順利踏入【練氣期一層】！"
+            };
+
+            p.gongFa = num === 1 ? "《太上鎮天經》" : (num === 2 ? "《荒古聖體訣》" : "《自創帝經殘篇》");
+            if (num === 4) p.fuZhi = "一品煉丹師";
+
+            appendChapter(`12歲 · 抉擇與開脈`, choiceTexts[num]);
+            updateStatusPanel();
+
+            // 生成後續 13 歲以後的回合
+            generateNextTurn();
         }
 
-        // 動態生成帶有劇情介紹的隨機事件
-        function generateRandomTurn() {
+        function generateNextTurn() {
             p.age += 1;
+            p.progress += getRandomInt(25, 45);
+
+            // 自動突破檢測
+            if (p.progress >= 100 && p.realmIdx < realms.length - 1) {
+                p.realmIdx += 1;
+                p.progress -= 100;
+                p.lifespan += 10;
+                appendChapter(`${p.age}歲 · 水到渠成突破`, `⚡ 【破境天象】體內真氣累積至臨界點，經脈轟然巨響！你順利突破至 **【${realms[p.realmIdx]}】**！壽元增加 10 年！`);
+            }
 
             if (p.age >= p.lifespan) {
-                endGame();
+                appendChapter(`${p.age}歲 · 大道終章`, `☠️ 【仙途終結】歲月如刀，你活到了 ${p.age} 歲，停留在【${realms[p.realmIdx]}】。耗盡了最後一絲壽元，最終坐化於洞府之中……`);
+                document.getElementById('options-panel').innerHTML = `<button class="btn btn-danger" onclick="location.reload()">🔄 重開全新修仙人生</button>`;
+                updateStatusPanel();
+                scrollToBottom();
                 return;
             }
 
-            const scenarios = [
-                {
-                    intro: `【${p.age}歲 · 拍賣會爭奪】\n這一年，仙城舉辦了大型拍賣會。壓軸拍品是一株能增加突破概率的「紫雲芝」，現場不少大勢力紛紛競價，氣氛極度緊張。`,
-                    opt1: "1. 傾家蕩產參與競拍，誓要拿下仙草",
-                    opt2: "2. 放棄競拍，暗中觀察拍下仙草者的動向",
-                    res1: { text: "你成功拍下紫雲芝並煉化，修為狂飆，但耗盡了大部分積蓄！", addProg: 60, addStone: -80 },
-                    res2: { text: "你尾隨買家發現其遭到捷徑截殺，你順水推舟拾得戰利品！", addProg: 40, addStone: 120 }
-                },
-                {
-                    intro: `【${p.age}歲 · 秘境古陣】\n你在歷練時無意間闖入了一座殘破的上古大陣。陣內光芒閃爍，隱約有仙家靈氣溢出，但周圍佈滿了殺機。`,
-                    opt1: "1. 憑藉悟性硬闖古陣，尋求秘境核心機緣",
-                    opt2: "2. 繞開殺陣，只在秘境外圍採集靈藥",
-                    res1: { text: "你破開殺陣獲得了大能傳承！修為大幅提升！", addProg: 70, addStone: 50 },
-                    res2: { text: "你在外圍安全採集到數株珍貴靈草，無驚無險。", addProg: 30, addStone: 60 }
-                },
-                {
-                    intro: `【${p.age}歲 · 魔道潛伏】\n你在路過村莊時，發現有邪修正悄悄佈置血祭大陣，抽取凡人精血修練邪功。對方修為與你在伯仲之間。`,
-                    opt1: "1. 拔劍出手，果斷佈置符籙圍殺邪修",
-                    opt2: "2. 不明對方底細，悄悄返回傳訊給宗門長老",
-                    res1: { text: "你成功斬殺邪修，獲得其儲物袋，名聲大噪！", addProg: 50, addStone: 100 },
-                    res2: { text: "宗門長老前來平定邪修，並獎勵了你功德點與丹藥。", addProg: 40, addStone: 40 }
-                }
-            ];
-
-            p.currentScenario = scenarios[getRandomInt(0, scenarios.length - 1)];
+            updateStatusPanel();
 
             document.getElementById('options-panel').innerHTML = `
-                <h3>👉 【${p.age}歲劇情】${p.currentScenario.intro}</h3>
-                <button class="btn" onclick="makeGenericChoice(1)">${p.currentScenario.opt1}</button>
-                <button class="btn" onclick="makeGenericChoice(2)">${p.currentScenario.opt2}</button>
+                <h3>👉 【${p.age} 歲 · 天道演化回合】</h3>
+                <button class="btn" onclick="generateNextTurn()">🧘‍♂️ 繼續推演第 ${p.age} 歲年歲事件與修仙歷程</button>
             `;
-            scrollToBottom();
-        }
-
-        function makeGenericChoice(optNum) {
-            p.chapterNum += 1;
-            let res = (optNum === 1) ? p.currentScenario.res1 : p.currentScenario.res2;
-            p.progress += res.addProg;
-            p.lingShi += res.addStone;
-
-            let btText = checkBreakthrough();
-            appendChapter(`${p.age}歲 · 命運抉擇`, res.text + btText);
-            updateStatusBar();
-
-            generateRandomTurn();
-        }
-
-        function makeChoice(choiceKey) {
-            p.chapterNum += 1;
-            let btText = "";
-
-            if (choiceKey === '13_a') {
-                p.progress += 50;
-                btText = checkBreakthrough();
-                appendChapter("13歲 · 獲得古老殘頁", `你恭敬地向溶洞中央的古人骸骨行禮，隨後在骨骸旁發掘出一卷古樸羊皮殘頁！上面記載著一種極為罕見的古老吐納法門，使你的修練速度大大提升！` + btText);
-                updateStatusBar();
-                presentChoices14();
-
-            } else if (choiceKey === '13_b') {
-                p.progress += 20;
-                btText = checkBreakthrough();
-                appendChapter("13歲 · 平穩避雨", `你謹慎地留在洞口避雨。雨停後你平安返回家族，雖然錯過了機緣，但勝在安全無虞。` + btText);
-                updateStatusBar();
-                presentChoices14();
-
-            } else if (choiceKey === '14_a') {
-                p.lingShi -= 30; p.progress += 60;
-                btText = checkBreakthrough();
-                appendChapter("14歲 · 撿漏太上劍意", `你買下黑鐵片並用真火燒灼，泥垢剝落後竟顯現出「太上劍意」四個字！你參透了上古劍修心得，攻伐之力大幅增強！` + btText);
-                updateStatusBar();
-                generateRandomTurn();
-
-            } else if (choiceKey === '14_b') {
-                p.lingShi -= 50; p.progress += 30;
-                btText = checkBreakthrough();
-                appendChapter("14歲 · 購買高階丹藥", `你前往丹藥鋪購買了聚氣丹服下，體內真氣有所積累，修為穩步提升。` + btText);
-                updateStatusBar();
-                generateRandomTurn();
-            }
-        }
-
-        function endGame() {
-            let container = document.getElementById('chapter-container');
-            let div = document.createElement('div');
-            div.className = 'chapter-box';
-            div.innerHTML = `
-                <div class="chapter-title">${p.age}歲 · 大道終章</div>
-                <div class="chapter-content">☠️ 【歲月坐化】你活到了 ${p.age} 歲，停留在【${realms[p.realmIdx]}】。耗盡了最後一絲壽元，最終坐化於洞府之中……</div>
-            `;
-            container.appendChild(div);
-            document.getElementById('options-panel').innerHTML = `<button class="btn btn-danger" onclick="location.reload()">🔄 重開全新修仙人生</button>`;
             scrollToBottom();
         }
     </script>
