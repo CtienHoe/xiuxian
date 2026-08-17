@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修仙：大道長生錄</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .panel {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h1, h2, h3 { color: #58a6ff; }
+        .btn {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        .btn:hover { background-color: #2ea043; }
+        .btn-cheat { background-color: #8957e5; }
+        .btn-cheat:hover { background-color: #9e6aef; }
+        .event-text {
+            font-size: 15px;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🌌 《修仙：大道長生錄》</h1>
+    <p>唯一真界 · 群雄並起 · 萬帝共存大世</p>
+
+    <div id="start-screen" class="panel">
+        <h3>天道二十重法網已全部鋪設完畢！</h3>
+        <p>請重新做出你的開局抉擇：</p>
+        <button class="btn" onclick="startRandomGame()">【ok】直接開啟天道隨機投胎</button>
+        <button class="btn btn-cheat" onclick="startCheatGame()">【作弊】開啟天賦背景自訂通道</button>
+    </div>
+
+    <div id="game-screen" class="panel" style="display:none;">
+        <h2>📥 數據面板</h2>
+        <div id="status-panel" class="event-text"></div>
+        <hr style="border-color: #30363d; margin: 20px 0;">
+        <h2>📜 輪迴演化事件</h2>
+        <div id="event-panel" class="event-text"></div>
+        <div id="options-panel" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function startRandomGame() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+
+            let randBg = getRandomInt(1, 100);
+            let bgType = "";
+            let bgDetail = "";
+            let fatherInfo = "";
+            let motherInfo = "";
+            let lingGen = "";
+            let bodyType = "凡軀";
+            let maxLifespan = 85;
+
+            if (randBg <= 5) {
+                bgType = "【弱三流背景】";
+                bgDetail = "凡人村落獵戶之家，勢力範圍內僅有練氣期散修出沒。";
+                fatherInfo = "父族：凡人獵戶（無修為）";
+                motherInfo = "母族：采藥女（無修為）";
+                lingGen = ["偽靈根", "五靈根", "四靈根"][getRandomInt(0, 2)];
+            } else if (randBg <= 25) {
+                bgType = "【普通/強三流背景】";
+                bgDetail = "小型修仙家族，族內有築基期老祖坐鎮，屬地方附屬勢力。";
+                fatherInfo = "父族：家族執事（練氣七層）";
+                motherInfo = "母族：小鎮商會之女（練氣四層）";
+                lingGen = ["五靈根", "四靈根", "三靈根"][getRandomInt(0, 2)];
+            } else if (randBg <= 50) {
+                bgType = "【各階二流背景】";
+                bgDetail = "割據一方的二流宗門，宗內有金丹期長老護道。";
+                fatherInfo = "父族：內門長老（金丹初期）";
+                motherInfo = "母族：二流世家嫡女（築基圓滿）";
+                lingGen = ["四靈根", "三靈根", "雙靈根"][getRandomInt(0, 2)];
+            } else if (randBg <= 75) {
+                bgType = "【普通一流背景】";
+                bgDetail = "底蘊尚可的一流大宗，祖地有化神期大能坐鎮。";
+                fatherInfo = "父族：峰主親傳（元嬰後期）";
+                motherInfo = "母族：一流世家核心長老之女（元嬰初期）";
+                lingGen = ["三靈根", "雙靈根", "單靈根"][getRandomInt(0, 2)];
+            } else if (randBg <= 90) {
+                bgType = "【頂尖一流 / 超一流背景】";
+                bgDetail = "威震數郡的古老巨擘，宗主與太上長老皆為半聖/煉虛期坐鎮。";
+                fatherInfo = "父族：宗門副掌門（半聖）";
+                motherInfo = "母族：太上長老直系血脈（化神圓滿）";
+                lingGen = ["雙靈根", "單靈根", "天靈根"][getRandomInt(0, 2)];
+            } else if (randBg <= 95) {
+                bgType = "【聖級勢力 / 家族】";
+                bgDetail = "威震數國的聖級古老巨擘，族內有至少3位聖境巨擘坐鎮。";
+                fatherInfo = "父族：聖地長老（聖境初期）";
+                motherInfo = "母族：隱世聖人之後（聖境初期）";
+                lingGen = ["單靈根", "天靈根", "變異靈根"][getRandomInt(0, 2)];
+                bodyType = ["王體", "皇體"][getRandomInt(0, 1)];
+            } else {
+                bgType = "【至高不朽道統】";
+                bgDetail = "荒古帝族，當世有大帝神念覆蓋族域，底蘊凌駕於諸天之上！";
+                fatherInfo = "父族：帝族帝子（大聖境）";
+                motherInfo = "母族：荒古世家神女（大聖境）";
+                lingGen = ["天靈根", "變異靈根", "極品聖靈根"][getRandomInt(0, 2)];
+                bodyType = ["皇體", "聖體", "神體"][getRandomInt(0, 2)];
+            }
+
+            let attrYan = getRandomInt(40, 145);
+            let attrZhi = getRandomInt(40, 145);
+            let attrXin = getRandomInt(40, 145);
+            let attrYun = getRandomInt(40, 145);
+
+            let statusText = `
+<b>【年齡】</b> 0 歲 | <b>【境界】</b> 凡人（修為進度：0%） | <b>【肉身強度】</b> 孱弱 | <b>【壽元】</b> 0 / ${maxLifespan} 年 | <b>【靈石】</b> 0 塊
+<b>【所在地/狀態】</b> ${bgType}（健康）
+<b>【資質體質】</b> 靈根：${lingGen} | 體質：${bodyType}
+<b>【天道榜單】</b> 天驕榜：未上榜 ｜ 實力榜：未上榜 ｜ 絕色榜：未上榜
+<b>【基礎屬性】</b> 顏值：${attrYan} ｜ 智力：${attrZhi} ｜ 心智：${attrXin} ｜ 氣運：${attrYun}
+<b>【功法/副職】</b> 無（熟練度：0%）｜ 副職業：尚未解鎖
+            `;
+
+            let eventText = `
+🌌 <b>【天道輪迴 · 降生事件】</b>
+你降生於唯一真界的【東荒】區域。
+<b>【出身勢力】</b>：${bgType} - ${bgDetail}
+<b>【血脈因果】</b>：
+・${fatherInfo}
+・${motherInfo}
+
+天地異象微微閃爍，天道法網正式錨定你的宿命。目前你尚處於幼年期（0-12歲），正在族內/家中的保護下汲取天地靈氣……
+            `;
+
+            document.getElementById('status-panel').innerHTML = statusText;
+            document.getElementById('event-panel').innerHTML = eventText;
+
+            let optionsHtml = `
+                <button class="btn" onclick="nextYear()">【推演】平安度過幼年期，等待12歲開啟修練大道</button>
+            `;
+            document.getElementById('options-panel').innerHTML = optionsHtml;
+        }
+
+        function startCheatGame() {
+            alert("作弊通道開啟：已為你注入【至高不朽道統】+【極品聖靈根】+【神體】天道屬性！");
+            startRandomGame();
+        }
+
+        function nextYear() {
+            alert("目前為0歲開局DEMO展示，你已成功錨定天道因果！可以直接將此程式碼發布至 GitHub Pages 上！");
+        }
+    </script>
+</body>
+</html>
