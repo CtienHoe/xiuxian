@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>修仙：大道長生錄 - AI沙盒動態演化版</title>
+    <title>修仙：大道長生錄 - 長篇小說章節版</title>
     <style>
         body {
             background-color: #0d1117;
             color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: "PingFang TC", "Heiti TC", -apple-system, BlinkMacSystemFont, sans-serif;
             padding: 20px;
             max-width: 900px;
             margin: 0 auto;
-            line-height: 1.7;
+            line-height: 1.8;
         }
         .panel {
             background-color: #161b22;
             border: 1px solid #30363d;
             border-radius: 8px;
-            padding: 20px;
+            padding: 24px;
             margin-bottom: 20px;
         }
         h1, h2, h3 { color: #58a6ff; }
@@ -26,196 +26,227 @@
             background-color: #238636;
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 15px;
+            padding: 14px 24px;
+            font-size: 16px;
             border-radius: 6px;
             cursor: pointer;
-            margin-right: 10px;
-            margin-top: 10px;
+            margin-right: 12px;
+            margin-top: 12px;
+            font-weight: bold;
         }
         .btn:hover { background-color: #2ea043; }
-        .btn-script { background-color: #1f6feb; }
+        .btn-story { background-color: #1f6feb; }
+        .btn-story:hover { background-color: #388bfd; }
         .btn-danger { background-color: #da3633; }
-        .event-log {
-            max-height: 500px;
-            overflow-y: auto;
+        .chapter-box {
             background: #090d13;
-            padding: 15px;
-            border-radius: 6px;
+            padding: 20px;
+            border-radius: 8px;
             border: 1px solid #30363d;
+            margin-bottom: 20px;
         }
-        .log-item {
+        .chapter-title {
+            color: #f2e05a;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+        .chapter-content {
+            font-size: 15px;
+            white-space: pre-line;
+            color: #d2a8ff;
+        }
+        .status-bar {
+            background: #161b22;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #58a6ff;
+            font-size: 14px;
             margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px dashed #21262d;
         }
-        .tag { color: #f2e05a; font-weight: bold; }
-        .highlight { color: #58a6ff; }
-        .breakthrough { color: #7ee787; font-weight: bold; }
-        .bad-event { color: #ff7b72; }
     </style>
 </head>
 <body>
 
-    <h1>🌌 《修仙：大道長生錄》V5.0</h1>
-    <p>AI 沙盒動態生成引擎 · 獨立隨機因果 · 專屬修仙傳記</p>
+    <h1>📖 《修仙：大道長生錄》V6.0</h1>
+    <p>長篇小說章節版 · 豐富人生機緣 · 動態命運演化</p>
 
     <div id="start-screen" class="panel">
-        <h3>🌌 開啟你的獨一無二修仙人生：</h3>
-        <button class="btn btn-script" onclick="initGame('normal')">🎲 【天道隨機】獨立資質與背景生成</button>
-        <button class="btn btn-script" onclick="initGame('god')">👑 【天驕降世】荒古帝族神體開局</button>
+        <h3>🌌 開啟你的修仙小說主角人生：</h3>
+        <button class="btn btn-story" onclick="initStory('normal')">🎲 【天道輪迴】開啟長篇小說連載</button>
+        <button class="btn btn-story" onclick="initStory('god')">👑 【帝族降世】無敵天驕專屬章節</button>
     </div>
 
     <div id="game-screen" class="panel" style="display:none;">
-        <h2>📥 命格與當前狀態</h2>
-        <div id="status-panel"></div>
-        <hr style="border-color: #30363d; margin: 20px 0;">
-        <h2>📜 沙盒動態演化履歷（獨立事件庫生成）</h2>
-        <div id="event-log" class="event-log"></div>
-        <div id="options-panel" style="margin-top: 20px;"></div>
+        <div id="status-bar" class="status-bar"></div>
+        <div id="chapter-container"></div>
+        <div id="options-panel"></div>
     </div>
 
     <script>
         let p = {
-            name: "葉長生", age: 12, realmIdx: 1, progress: 0, lifespan: 85, lingShi: 50,
-            lingGen: "", bodyType: "凡軀", rateMult: 1, yun: 50, xin: 50, zhi: 50,
-            injury: "無"
+            name: "葉長生", age: 12, realmIdx: 1, progress: 0, lifespan: 90, lingShi: 100,
+            lingGen: "地品天靈根", bodyType: "凡軀", chapterNum: 1
         };
 
         const realms = [
             "凡人", "練氣一層", "練氣二層", "練氣三層", "練氣四層", "練氣五層",
-            "練氣六層", "練氣七層", "練氣八層", "練氣九層", "練氣十層大圓滿",
-            "築基初期", "築基中期", "築基後期", "築基大圓滿",
-            "金丹初期", "金丹中期", "金丹後期", "金丹大圓滿", "元嬰老祖"
+            "練氣六層", "練氣七層", "練氣八層", "練氣九層", "練氣大圓滿",
+            "築基初期", "築基中期", "築基後期", "築基大圓滿", "金丹大能"
         ];
-
-        // 沙盒組件庫
-        const locs = ["萬獸山脈深處", "黑市地下坊市", "上古遺蹟外圍", "九幽陰煞谷", "青雲仙城拍賣行", "無名仙人洞府殘址", "落日森林秘境", "天雷崖瀑布下"];
-        const Npcs = ["一位身負重傷的邪修老祖", "一名下山歷練的聖地女帝", "一隻沉睡萬年的三階妖獸", "一位神出鬼沒的遊方邋遢道人", "一名遭同門追殺的叛逆弟子", "一位失意落魄的古陣法大師"];
-        const items = ["殘破的上古玉簡", "半顆散發異香的洗髓丹", "一柄生鏽的無名飛劍", "神秘的黑色金屬殘片", "株百年珍稀朱果", "一卷記載禁術的羊皮紙"];
 
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        function appendLog(text) {
-            let logDiv = document.getElementById('event-log');
-            logDiv.innerHTML = `<div class="log-item">${text}</div>` + logDiv.innerHTML;
-        }
-
-        function updateStatus() {
-            document.getElementById('status-panel').innerHTML = `
-<b>【主角】</b> ${p.name} | <b>【年齡】</b> ${p.age} 歲 | <b>【境界】</b> <span class="highlight">${realms[p.realmIdx]}</span> (${p.progress}%)
-<b>【壽元】</b> ${p.age} / ${p.lifespan} 年 | <b>【靈石】</b> ${p.lingShi} 塊 | <b>【修煉天資】</b> <span class="tag">${p.rateMult} 倍速</span>
-<b>【資質】</b> ${p.lingGen} (${p.bodyType}) | <b>【身體狀況】</b> ${p.injury}
-<b>【屬性】</b> 氣運：${p.yun} ｜ 心智：${p.xin} ｜ 智力：${p.zhi}
+        function updateStatusBar() {
+            document.getElementById('status-bar').innerHTML = `
+<b>【主角】</b> ${p.name} ｜ <b>【年齡】</b> ${p.age} 歲 ｜ <b>【境界】</b> ${realms[p.realmIdx]} ｜ <b>【壽元】</b> ${p.age}/${p.lifespan} 年 ｜ <b>【靈石】</b> ${p.lingShi} 塊
             `;
         }
 
-        function checkAutoBreakthrough() {
-            while (p.progress >= 100 && p.realmIdx < realms.length - 1) {
+        function checkBreakthrough() {
+            if (p.progress >= 100 && p.realmIdx < realms.length - 1) {
                 p.realmIdx += 1;
                 p.progress -= 100;
-                let addLife = (p.realmIdx >= 11) ? 35 : 8;
-                p.lifespan += addLife;
-
-                appendLog(`⚡ <span class="breakthrough">【水到渠成 · 天道感應！】</span> 你的修為累積至巔峰，體內百穴齊鳴，天地靈氣如醍醐灌頂般注入！你順利衝破瓶頸，升至 <b>【${realms[p.realmIdx]}】</b>！壽元增加 +${addLife} 年！`);
+                p.lifespan += 10;
+                return `\n\n⚡ 【破境天象】體內澎湃的真氣終於衝破桎梏！周身靈氣如海嘯般灌入丹田，你順利突破至 **【${realms[p.realmIdx]}】**！壽元大增，靈魂獲得了洗禮！`;
             }
+            return "";
         }
 
-        function initGame(mode) {
+        function initStory(mode) {
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
 
             if (mode === 'god') {
-                p.lingGen = "萬劫混沌天靈根"; p.bodyType = "鴻蒙道體";
-                p.rateMult = 25; p.lifespan = 220; p.lingShi = 3000;
-                p.yun = 95; p.xin = 90; p.zhi = 90;
-                appendLog(`👑 <b>【沙盒開局 · 帝星降世】</b><br>你降生於荒古帝族，身懷<b>【${p.lingGen}】</b>與<b>【${p.bodyType}】</b>，氣運滔天！出生時天地異象覆蓋三千州，族內老祖封印你至12歲，正式解封開啟無敵仙途！`);
-            } else {
-                let r = getRandomInt(1, 100);
-                if (r < 50) {
-                    p.lingGen = "四靈根"; p.rateMult = 2; p.lifespan = 80;
-                } else if (r < 85) {
-                    p.lingGen = "雙靈根"; p.rateMult = 6; p.lifespan = 100; p.lingShi = 200;
-                } else {
-                    p.lingGen = "極品天靈根"; p.bodyType = "太古聖體"; p.rateMult = 15; p.lifespan = 150; p.lingShi = 1000;
-                }
-                p.yun = getRandomInt(30, 90); p.xin = getRandomInt(30, 90); p.zhi = getRandomInt(30, 90);
-                appendLog(`🎲 <b>【沙盒開局 · 命格隨機生成】</b><br>天道法網隨機錨定你的因果！你擁有的資質為<b>【${p.lingGen}】</b>（${p.bodyType}），氣運值為 ${p.yun}。12 歲那年，你拿著家族留下的最後一點積蓄，正式踏入仙途……`);
+                p.lingGen = "萬劫混沌天靈根"; p.bodyType = "鴻蒙聖體"; p.lifespan = 200; p.lingShi = 2000;
             }
 
-            updateStatus();
-            showActions();
+            updateStatusBar();
+
+            let chapterText = `【第一章：十二歲 · 引氣入體與族內試煉】
+
+你叫${p.name}，今年剛剛年滿十二歲。
+
+這一年，族內迎來了每十年一次的「開脈大典」。祠堂前香煙繚繞，幾位族老端坐在高台上。當你的手撫摸上測靈石的瞬間，一道耀眼的光柱沖天而起，照亮了整個演武場！族長與長老們震驚得猛然站起，當場宣佈將你列為家族的核心種子弟子，並賜予你第一套正統修練功法與一間獨立的後山靜室。
+
+在隨後的數月裡，你閉關苦修，順利將第一縷天地靈氣引導至丹田，正式踏入了【${realms[p.realmIdx]}】！這意味著，你徹底擺脫了凡人的命運，真正邁出了追求長生大道的第一步。`;
+
+            renderChapter("序章 · 仙途開啟", chapterText);
+            showNextButton("進入十三歲：踏入紅塵與族內風波");
         }
 
-        function showActions() {
+        function renderChapter(title, text) {
+            let container = document.getElementById('chapter-container');
+            let html = `
+                <div class="chapter-box">
+                    <div class="chapter-title">第 ${p.chapterNum} 章：${title}</div>
+                    <div class="chapter-content">${text}</div>
+                </div>
+            `;
+            container.innerHTML = html + container.innerHTML; // 最新章節在最上面
+        }
+
+        function showNextButton(btnText) {
             document.getElementById('options-panel').innerHTML = `
-                <button class="btn" onclick="generateProceduralEvent('xiulian')">🧘‍♂️ 閉關感悟 (動態修煉演化)</button>
-                <button class="btn" onclick="generateProceduralEvent('lilian')">🌲 踏入紅塵 (AI 沙盒歷練遭遇)</button>
+                <button class="btn btn-story" onclick="nextYearStory()">📜 ${btnText}</button>
             `;
         }
 
-        function generateProceduralEvent(type) {
+        function nextYearStory() {
             p.age += 1;
-            let ageStr = `<span class="tag">【${p.age}歲】</span> `;
+            p.chapterNum += 1;
+            p.progress += getRandomInt(35, 65);
 
-            if (type === 'xiulian') {
-                let add = getRandomInt(10, 20) * p.rateMult;
-                p.progress += add;
+            let btText = checkBreakthrough();
+            let title = "";
+            let text = "";
 
-                let stateRand = getRandomInt(1, 100);
-                if (stateRand < 15 && p.xin < 60) {
-                    p.progress = Math.max(0, p.progress - 15);
-                    appendLog(`${ageStr}<span class="bad-event">【心魔入侵】</span> 在閉關衝擊關卡時，你因過度急於求成陷入執念，體內真氣亂竄！好在你及時清醒，但修為倒退了 15%。`);
-                } else if (stateRand > 85 || p.yun > 80) {
-                    p.progress += 30;
-                    appendLog(`${ageStr}✨ <b>【大道頓悟】</b> 閉關之際，你突然福至心靈，參透了功法中隱藏的一絲天地法則！周身靈氣暴漲，額外獲得 <b>+30% 修為</b>！`);
+            // 根據年齡生成專屬長篇小說事件
+            if (p.age === 13) {
+                title = "十三歲 · 後山禁地與古老殘頁";
+                text = `十三歲這年，你並沒有像其他同齡弟子一樣盲目閉關。
+
+一日黃昏，你獨自在家族後山的深谷中採摘補氣草，不料天降暴雨，山體滑坡將你逼入了一處隱秘的天然溶洞。溶洞深處死寂一片，中央竟座落著一具早已乾枯的古人骸骨。你恭敬地向骸骨行了三叩首之禮，隨後在骨骸身旁發掘出了一卷散發著古樸氣息的羊皮殘頁。
+
+殘頁上記載著一種極為罕見的古老吐納法門。你試著運轉此法，發現周圍靈氣匯聚的速度竟然比族內功法快了數倍！這次意外的機緣，為你未來的修仙之路奠定了極其堅實的基礎。` + btText;
+
+            } else if (p.age === 14) {
+                title = "十四歲 · 坊市拍賣會與撿漏";
+                text = `十四歲那年，你獲准離開家族，隨商隊前往百里之外的仙城坊市見世面。
+
+熱鬧非凡的坊市中人頭攢動，各種叫賣聲不絕於耳。在一處不起眼的攤位前，你的目光被一塊滿是泥垢、看起來毫無靈氣波動的黑色鐵片吸引。憑藉著敏銳的直覺，你花費了少量靈石將其買下。
+
+回到客棧後，你嘗試用真火燒灼鐵片。隨著外層泥垢剝落，鐵片上竟顯現出四個暗金色的古字——「太上劍意」！這竟是一塊記載著上古劍修心得的傳承殘片！你通宵研讀，對攻伐之道的理解獲得了質的飛躍。` + btText;
+
+            } else if (p.age === 15) {
+                title = "十五歲 · 族內大比與一戰成名";
+                text = `十五歲，家族迎來了三載一次的「少年大比」。
+
+擂台上，幾位平日裡目中無人的支脈天才接連拔得頭籌，神色得意洋洋。輪到你上場時，面對修為比你高上一層的強敵，你沉著應戰。在交手三十回合後，你果斷施展出先前領悟的古劍意，一指彈開對手的飛劍，震撼全場！
+
+這一戰，你以黑馬之姿榮獲大比第一名！不僅獲得了進入家族藏經閣頂層挑選秘寶的資格，更讓「${p.name}」這個名字在方圓數百里內小有名氣。` + btText;
+
+            } else if (p.age === 16) {
+                title = "十六歲 · 踏入山脈與生死劫難";
+                text = `十六歲，為了尋找突破所需的「築基草」，你獨自一人踏入了極度危險的黑風山脈。
+
+山脈深處瘴氣瀰漫，危機四伏。你在一處懸崖峭壁旁發現了築基草的蹤跡，但正當你準備採摘時，一頭巨大的二階妖獸「影月狼」猛然從暗處撲出！腥風撲面，生死僅在一瞬之間。
+
+你咬緊牙關，將周身真氣發揮到極致，憑藉著靈巧的身法與妖獸周旋了近兩個時辰。最終，你抓住妖獸力竭的破綻，一劍刺穿其要害！雖然身上多處負傷，但你成功採得靈草，並在生死邊緣體會到了真正的修仙殘酷。` + btText;
+
+            } else {
+                // 17 歲之後的動態隨機長篇小說章節生成器
+                let randType = getRandomInt(1, 4);
+                if (randType === 1) {
+                    title = `${p.age}歲 · 秘境探險與大能遺澤`;
+                    text = `在${p.age}歲這一年，你聽聞一座上古大能遺留的秘境在東荒臨世，無數散修與宗門弟子紛紛湧入。
+
+你結伴數名道友深入秘境。在秘境核心的大殿中，眾人為了爭奪一株千年靈藥大打出手，場面極度混亂。你沒有盲目搶奪靈藥，而是憑藉過人的心思，悄悄摸索至大殿偏廳，找到了一間保存完好的煉丹房。
+
+你在丹房的紫銅鼎中發掘出了幾粒並未毀壞的高階丹藥。服下丹藥後，藥力瞬間化作浩瀚靈氣衝刷著你的四肢百骸，你的修為再次獲得了大跨步式的提升！` + btText;
+
+                } else if (randType === 2) {
+                    title = `${p.age}歲 · 下山紅塵歷練與心境昇華`;
+                    text = `到了${p.age}歲，你感覺自己的修為遇到了瓶頸，於是決定封印真氣，化作一名普通凡人下山歷練。
+
+你走過了繁華的凡人帝都，看遍了世間的悲歡離合與生老病死。在一家簡陋的茶館裡，你聽著老講書人講述著紅塵往事，心中突然對「歲月與長生」產生了全新的領悟。
+
+紅塵鍊心，大巧若拙。當你重新解開真氣封印的那一刻，你的心智與靈魂獲得了前所未有的昇華，原本堅固的境界壁壘竟自行產生了裂痕！` + btText;
+
+                } else if (randType === 3) {
+                    title = `${p.age}歲 · 遭遇邪修與智鬥強敵`;
+                    text = `在${p.age}歲的某個夜晚，你路過一座被陰雲籠罩的荒廢村莊，意外發現有魔道邪修正在此地布下邪陣，抽取凡人的生血修練邪功。
+
+魔道邪修發現了你的蹤跡，桀桀怪笑著揮舞骷髏長幡向你襲來。對方的修為極其強悍，你深知不能硬拼，於是一邊假裝不敵退後，一邊悄悄在四周佈置下陣法符籙。
+
+當邪修踏入陷阱的瞬間，你猛然引爆所有符籙，刺眼的雷光將邪陣徹底摧毀！你成功剷除了魔頭，不僅解救了無辜百姓，更從邪修的儲物袋中獲得了豐厚的戰利品。` + btText;
+
                 } else {
-                    let envs = ["在寂靜的深山洞府內", "在宗門靈氣濃郁的聚靈陣中", "在密室內焚香靜坐", "在寒潭之畔打坐吐納"];
-                    let env = envs[getRandomInt(0, envs.length - 1)];
-                    appendLog(`${ageStr}${env}，你引導天地靈氣貫通周身奇經八脈。經過一整年的苦修，修為穩健提升 <b>+${add}%</b>！`);
-                }
+                    title = `${p.age}歲 · 洞府苦修與天地異象`;
+                    text = `這一整年（${p.age}歲），你選擇在靈氣充沛的靈脈洞府中閉關不出。
 
-            } else if (type === 'lilian') {
-                // AI 動態沙盒隨機事件生成器
-                let loc = locs[getRandomInt(0, locs.length - 1)];
-                let npc = Npcs[getRandomInt(0, Npcs.length - 1)];
-                let item = items[getRandomInt(0, items.length - 1)];
+洞府中寂靜無聲，只有石壁上滴落的水珠聲迴響。你日夜運轉功法，將周天循環推演至極致。隨著修為的積累，洞府上空開始凝聚出片片七彩祥雲，周圍的野生靈獸紛紛伏在地面上向洞府方向朝拜。
 
-                let outcomeRand = getRandomInt(1, 100) + (p.yun / 5);
-
-                if (outcomeRand < 35) {
-                    // 壞事件/危機
-                    let lossLingshi = getRandomInt(20, 80);
-                    p.lingShi = Math.max(0, p.lingShi - lossLingshi);
-                    appendLog(`${ageStr}<span class="bad-event">【危險遭遇】</span> 你隻身前往<b>【${loc}】</b>，不幸撞見了<b>【${npc}】</b>！對方見財起意對你動手。你憑藉敏捷身法浴血逃脫，但遺失了 <b>${lossLingshi} 塊靈石</b>。`);
-                } else if (outcomeRand < 75) {
-                    // 中等收穫
-                    let gainLingshi = getRandomInt(50, 200);
-                    p.lingShi += gainLingshi;
-                    p.progress += 25;
-                    appendLog(`${ageStr}你在<b>【${loc}】</b>探索時，偶然結識了<b>【${npc}】</b>。經過一番交涉與交易，你獲得了<b>【${item}】</b>，將其變現與煉化後，獲得 <b>${gainLingshi} 靈石</b>，修為提升 <b>+25%</b>！`);
-                } else {
-                    // 大機緣
-                    let gainLingshi = getRandomInt(200, 600);
-                    p.progress += 60;
-                    appendLog(`${ageStr}💥 <b>【氣運大爆發！】</b> 你在<b>【${loc}】</b>無意中破解了古老禁制，偶遇<b>【${npc}】</b>並得到其看重，贈予你<b>【${item}】</b>！你獲得了強大的傳承力量，修為狂飆 <b>+60%</b>，獲得 <b>${gainLingshi} 靈石</b>！`);
+當你重新打開洞府石門的那一刻，雙眸中閃爍著如星辰般璀璨的光芒，周身氣場比以往更加深邃莫測！` + btText;
                 }
             }
 
-            // 自動水到渠成突破檢測
-            checkAutoBreakthrough();
-
-            // 壽元與死亡檢測
+            // 壽元死亡檢測
             if (p.age >= p.lifespan) {
-                appendLog(`☠️ <b>【仙途終結 · 坐化】</b> 歲月長河滾滾向前，你活到了 ${p.age} 歲，停留在【${realms[p.realmIdx]}】。縱有萬般不甘，壽元終究耗盡，化為天下一縷塵埃……`);
-                document.getElementById('options-panel').innerHTML = `<button class="btn btn-danger" onclick="location.reload()">🔄 重開全新沙盒人生</button>`;
-                updateStatus();
+                text += `\n\n☠️ 【仙途終結 · 歲月坐化】\n歲月如刀，光陰荏苒。你活到了 ${p.age} 歲，停留在【${realms[p.realmIdx]}】。縱然你這一生經歷了無數波瀾壯闊的章節，終究沒能突破天地的最後桎梏，最終在洞府內坐化，化為修仙界的一段傳奇故事……`;
+                renderChapter(`${p.age}歲 · 大道終章`, text);
+                document.getElementById('options-panel').innerHTML = `<button class="btn btn-danger" onclick="location.reload()">🔄 重開全新小說人生</button>`;
+                updateStatusBar();
                 return;
             }
 
-            updateStatus();
+            updateStatusBar();
+            renderChapter(title, text);
+            showNextButton(`進入 ${p.age + 1} 歲：繼續推演小說下一章`);
         }
     </script>
 </body>
